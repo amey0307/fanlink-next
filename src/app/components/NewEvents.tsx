@@ -1,18 +1,8 @@
 import React from "react";
 import EventBox from "./EventBox";
+import { EventData } from "@/app/type/util";
 
-// interface Event {
-//     _id: string;
-//     eventName: string;
-//     eventDate: Date;
-//     eventTime: string;
-//     location: string;
-//     price: number;
-//     imageURL: string;
-//     viewMoreLink: string;
-// }
-
-function NewEvents({ eventsData }: { eventsData: any }) {
+function NewEvents({ eventsData }: { eventsData: EventData[] }) {
     if (eventsData?.length == 0) {
         return <h1 className="text-2xl font-bold mb-4">No new events found</h1>;
     }
@@ -24,7 +14,7 @@ function NewEvents({ eventsData }: { eventsData: any }) {
                 <h1 className="text-2xl font-bold"> New Events </h1>
                 <button className="view-more text-center">
                     <a
-                        href={eventsData.viewMoreLink}
+                        href='#'
                         className="text-blue-500 hover:text-blue-700 font-semibold"
                     >
                         View more
@@ -33,7 +23,7 @@ function NewEvents({ eventsData }: { eventsData: any }) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
                 {/* <div className="flex flex-wrap justify-start gap-10 mx-10"> */}
-                {eventsData?.map((event : any, index : number) => (
+                {eventsData?.map((event : EventData, index : number) => (
                     <div key={index}>
                         <EventBox events={event} />
                     </div>

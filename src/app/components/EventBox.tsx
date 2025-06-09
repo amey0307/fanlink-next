@@ -1,12 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import calender_icon from "@/assets/icons/calender.svg";
-import location_icon from "@/assets/icons/location.svg";
 import time_icon from "@/assets/icons/clock.svg";
+import { MapPinCheckInside, Clock, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
+import { EventData } from "@/app/type/util";
 
-function EventBox({ events } : { events: any }) {
+function EventBox({ events } : { events: EventData }) {
 
     return (
         <div className="event-box border shadow-md rounded-lg p-4 w-[18vw] h-[38vh] group bg-white dark:bg-[#020e0166] dark:border border-gray-500 backdrop:blur-3xl relative">
@@ -21,26 +20,14 @@ function EventBox({ events } : { events: any }) {
                 <div>
                     <h3 className="font-bold text-lg mb-2">{events?.eventName}</h3>
                     <p className="text-sm text-gray-500 mb-1 flex items-center gap-2 ml-[2px]">
-                        <img
-                            src={calender_icon}
-                            alt=""
-                            className="w-5 h-5 dark:invert hue-rotate-180"
-                        />
+                        <Calendar className="w-5 h-5 dark:invert hue-rotate-180" />
                         {format(events?.eventDate, "MMMM dd, yyyy")}
                         <span className="mx-2">|</span>
-                        <img
-                            src={time_icon}
-                            alt=""
-                            className="w-5 h-5 dark:invert hue-rotate-180"
-                        />
+                        <Clock className="w-5 h-5 dark:invert hue-rotate-180" />
                         {events?.eventTime}
                     </p>
-                    <p className="text-sm text-gray-500 mb-2 flex items-center gap-1">
-                        <img
-                            src={location_icon}
-                            alt=""
-                            className="w-6 h-6 dark:invert hue-rotate-180"
-                        />
+                    <p className="text-sm text-gray-500 mb-2 flex items-center gap-1 ml-[2px] mt-2">
+                        <MapPinCheckInside className="w-5 h-5 dark:invert hue-rotate-180" />
                         {events?.location}
                     </p>
                 </div>

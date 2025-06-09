@@ -9,5 +9,5 @@ const artistSchema = new mongoose.Schema({
     organizerId: { type: String, required: true },
 }, { timestamps: true })
 
-const Artist = mongoose.model('Artist', artistSchema);
+const Artist = mongoose.models.Artist || mongoose.model("Artist", artistSchema);
 export default Artist;

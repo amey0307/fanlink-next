@@ -2,15 +2,17 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
-// Add Razorpay type to the window object
-declare global {
-    interface Window {
-        Razorpay: any;
-    }
+interface CurrentUser {
+    id: string;
+    firstName: string;
+    fullName: string;
+    email: string;
+    lastName: string;
+    contactNumber?: string;
 }
 
 function PaymentComponent({ eventData }: { eventData: { eventId: string, price: number } }) {
-    const { currentUser }: { currentUser: any } = useAuth();
+    const { currentUser }: { currentUser: CurrentUser } = useAuth();
 
     const registerEvent = async () => {
         console.log("register user", currentUser);

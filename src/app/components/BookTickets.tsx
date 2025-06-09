@@ -1,8 +1,9 @@
 import BookedEventBox from "./BookedEventBox";
 import arrow from "@/assets/icons/arrow.svg";
 import { useState } from "react";
+import { EventData } from "@/app/type/util";
 
-function BookTickets({ eventsData } : { eventsData: any[] }) {
+function BookTickets({ eventsData } : { eventsData: EventData[] }) {
     const [scroll, setScroll] = useState(false);
 
     return (

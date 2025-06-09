@@ -5,8 +5,9 @@ import calender_icon from "@/assets/icons/calender.svg";
 import location_icon from "@/assets/icons/location.svg";
 import time_icon from "@/assets/icons/clock.svg";
 import { format } from "date-fns";
+import { EventData } from "@/app/type/util";
 
-function BookedEventBox({ events }: { events: any }) {
+function BookedEventBox({ events }: { events: EventData }) {
     return (
         <div className="event-box border shadow-md rounded-lg p-4 w-[20vw] group bg-white dark:bg-[#020e0166] dark:border border-gray-500 backdrop:blur-3xl relative">
             <h3 className="font-bold text-lg mb-2">{events?.eventName}</h3>

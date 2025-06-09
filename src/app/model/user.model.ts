@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    clerkId: { type: String, required: true, unique: true }, // Clerk user ID
-    username: { type: String, unique: true, default: null },
-    email: { type: String, unique: true, default: null },
-    genre: { type: [String], default: [] },
-    likedOrg: { type: [String], default: [] },
-    ArtistFollowed: { type: [String], default: [] },
-    bookedEvents: { type: [String], default: [] },
-}, { timestamps: true });
+    clerkId: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
+    email: { type: String, required: true },
+    firstName: { type: String, default: '' },
+    lastName: { type: String, default: '' },
+    profileImageUrl: { type: String, default: '' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
-
+// Prevent OverwriteModelError
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 export default User;

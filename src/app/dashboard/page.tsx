@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import Booktickets from "../components/BookTickets";
 import { toast } from "sonner";
+import { EventData } from "../type/util";
 
 function Dashboard() {
     const { currentUser } = useAuth() as any;
@@ -21,7 +22,7 @@ function Dashboard() {
         city: "Delhi",
     });
     const [search, setSearch] = useState("");
-    const [events, setEvents] = useState({});
+    const [events, setEvents] = useState<EventData[]>([]);
     const [bookedTicket, setBookedTicket] = useState(null);
     const [loading, setLoading] = useState(true);
     const [totalTickets, setTotalTickets] = useState(0);
@@ -31,9 +32,19 @@ function Dashboard() {
             setLoading(true);
 
             const getEvents = async () => {
+                const localEvents = localStorage.getItem("events");
+
+                // Check if events are already stored in localStorage
+                if (localEvents) {
+                    setEvents(JSON.parse(localEvents));
+                    return;
+                }
+
+                // Fetch events from the API
                 const data = await axios.get(`/api/event/get-all`);
-                // console.log(data);
+
                 setEvents(data.data.data);
+                localStorage.setItem("events", JSON.stringify(data.data.data));
             };
 
             const getBookedTickets = async () => {

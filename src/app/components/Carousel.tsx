@@ -1,7 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 
-function Carousel({ items }: { items: any[] }, autoRotate = true, interval = 5000) {
+interface CarouselItem {
+    type: 'image' | 'video';
+    src: string;
+}
+
+function Carousel({ items }: { items: CarouselItem[] }, autoRotate = true, interval = 5000) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {

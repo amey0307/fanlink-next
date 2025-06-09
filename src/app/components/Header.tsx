@@ -1,8 +1,8 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import logo from '@/assets/images/logo.png';
 import Search from './Search';
 import SignInButton from './SignInButton';
@@ -12,7 +12,6 @@ import { toast } from "sonner"
 import { Sun, Moon } from 'lucide-react';
 
 function Header() {
-    const router = useRouter();
     const pathname = usePathname();
     const [SearchNotVisible] = useState([
         '/',
@@ -46,7 +45,7 @@ function Header() {
 
     return (
         <div className={`${theme} z-[100]`}>
-            <nav className='p-5 flex justify-between items-center shadow-lg border-b-[1px] border-zinc-300 relative dark:bg-gradient-to-l from-green-950 to-[#011701]'>
+            <nav className='p-5 flex justify-between items-center shadow-lg border-b-[1px] border-zinc-300 relative dark:bg-gradient-to-l from-green-950 to-[#011701] fixed top-0 left-0 right-0 bg-white dark:border-zinc-700 dark:shadow-none'>
                 <Link href="/">
                     <Image
                         src={logo}

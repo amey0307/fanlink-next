@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 function SignInButton() {
     const { openSignIn } = useClerk();
     const { isSignedIn, user } = useUser();
-    const { signIn, currentUser } = useAuth();
+    const { signIn } = useAuth() as { signIn: (user: any) => void };
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,7 +14,7 @@ function SignInButton() {
             setLoading(false);
             if (isSignedIn) {
                 signIn(user);
-                // console.log("CurrentUser Updated: ", currentUser);
+                console.log("CurrentUser Updated: ", user);
             }
         }
     }, [isSignedIn, user, signIn]);

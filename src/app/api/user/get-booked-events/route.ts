@@ -1,31 +1,26 @@
 import Event from "@/app/model/event.model";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { currentUser } from '@clerk/nextjs/server'
 import User from "@/app/model/user.model";
 import mongoDB_Connection from "@/app/model/db";
 
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET() {
     try {
         // Get the user from the request
         await mongoDB_Connection();
         const clerkUser = await currentUser();
-        // console.log("lodaaaaaaa: ", clerkUser)
-        if (!clerkUser) {
-            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-        }
         const userId = clerkUser?.id;
-        // console.log(userId);
 
         const user = await User.findOne({ clerkId: userId });
 
         if (!user) {
-            return Response.json({ error: 'User not found in MongoDB' });
+            return NextResponse.json({
+                success: true,
+                data: { eventData: [], totalEvents: 0 },
+            });
         }
 
-        if (!user) {
-            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-        }
         const { bookedEvents } = user;
         const Events = await Event.find({ eventId: { $in: bookedEvents } });
 
@@ -34,6 +29,11 @@ export async function GET(req: NextRequest, res: NextResponse) {
             data: { eventData: Events, totalEvents: Events.length },
         });
     } catch (e) {
-        return NextResponse.error();
+        return NextResponse.json({
+            success: false,
+            message: `Error while fetching booked events: ${e instanceof Error ? e.message : 'Unknown error'}`,
+        }, {
+            status: 500
+        });
     }
 }

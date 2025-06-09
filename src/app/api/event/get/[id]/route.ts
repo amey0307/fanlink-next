@@ -10,7 +10,7 @@ export async function GET(req: Request) {
             success: true,
             data: event
         });
-    } catch (error: any) {
+    } catch (error: Error | any) {
         return Response.json({
             success: false,
             message: `Error while fetching: ${error.message}`

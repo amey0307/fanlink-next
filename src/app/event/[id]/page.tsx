@@ -1,26 +1,21 @@
 'use client';
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import HomeSkeleton from "@/app/components/HomeSkeleton";
 import { useTheme } from "@/app/context/ThemeProvider";
 import Carousel from "@/app/components/Carousel";
 import PaymentComponent from "@/app/components/PaymentComponent";
-import { useAuth } from "@/app/context/AuthContext";
 import { format } from "date-fns";
+import { useAuth } from "@/app/context/AuthContext";
+import { useParams } from "next/navigation";
 
 function Eventpage() {
-    const { eventId } = useParams();
-    type EventType = {
-        eventId?: string;
-        eventName?: string;
-        description?: string;
-        imageURL?: string;
-        eventDate?: string;
-        location?: string;
-        price?: number;
-        originalPrice?: number;
-        // Add other properties as needed
+    const params = useParams();
+    const eventId = params.id;
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleReadMore = () => {
+        setIsExpanded(!isExpanded);
     };
 
     interface Theme {
@@ -35,28 +30,34 @@ function Eventpage() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        console.log("eventId:", eventId);
+
+        if (!eventId || !currentUser?.id) {
+            console.log("Missing eventId or currentUser");
+            return;
+        }
 
         const fetchData = async () => {
             setLoading(true);
-            const fetchEvent = async () => {
-                try {
-                    const response = await axios.get(`/api/event/get/${eventId}`);
-                    const currUser = await axios.get(`/api/user/current/${currentUser?.id}`);
-                    setUser(currUser);
-                    const data = response.data;
-                    console.log(data)
-                    setEvent(data.data);
-                } catch (error) {
-                    console.log(error);
-                }
-            };
+            try {
+                const [eventResponse, userResponse] = await Promise.all([
+                    axios.get(`/api/event/get/${eventId}`),
+                    axios.get(`/api/user/current/${currentUser?.id}`)
+                ]);
 
-            await Promise.all([fetchEvent()]);
-            setLoading(false);
+                setEvent(eventResponse.data.data);
+                setUser(userResponse.data);
+                console.log("Event data:", eventResponse.data);
+                console.log("User data:", userResponse.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchData();
-    }, [eventId, currentUser]);
+    }, [eventId, currentUser?.id]);
 
     if (loading) {
         return <HomeSkeleton />;
@@ -64,8 +65,12 @@ function Eventpage() {
 
     return (
         <div className={`${theme}`}>
-            <div className="min-h-screen bg-white dark:bg-gradient-to-br from-green-950 to-[#000000] font-lato">
+            {/* Remove min-h-screen and add proper container height */}
+            <div className="bg-white dark:bg-gradient-to-br from-green-950 to-[#000000] font-lato">
                 {/* Hero Section with Carousel */}
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 mx-auto text-center pt-8">
+                    {"Event Details"}
+                </h1>
                 <div className="relative h-80 mb-8">
                     <Carousel
                         items={[
@@ -92,9 +97,10 @@ function Eventpage() {
                     </div>
                 </div>
 
-                <div className="max-w-6xl mx-auto px-6">
-                    {/* Main Content */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                {/* Change pb-20 to pb-8 or remove it entirely */}
+                <div className="max-w-6xl mx-auto px-6 pb-8">
+                    {/* Main Content - Remove mb-12 and make it mb-0 or mb-8 */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Left Content */}
                         <div className="lg:col-span-2">
                             {/* Event Title and Basic Info */}
@@ -104,7 +110,7 @@ function Eventpage() {
                                 </h1>
 
                                 <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                                    {event?.description || "Event description goes here..."}
+                                    {event?.short_description || "Event description goes here..."}
                                 </p>
 
                                 {/* Action Buttons */}
@@ -156,8 +162,8 @@ function Eventpage() {
                                 </div>
                             </div>
 
-                            {/* About Event Section */}
-                            <div className="mb-8">
+                            {/* About Event Section - Remove mb-8 and make it mb-0 since it's the last section */}
+                            <div className="mb-0">
                                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                                     About event
                                 </h2>
@@ -184,12 +190,37 @@ function Eventpage() {
                                     </div>
                                 </div>
 
-                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                                    {event?.description || "Detailed event description will be displayed here. This is an exciting event that brings together diverse groups of people for an unforgettable experience."}
-                                </p>
+                                <div className="relative">
+                                    <p className={`text-gray-600 dark:text-gray-300 leading-relaxed transition-all duration-300 ${!isExpanded ? 'line-clamp-3' : ''
+                                        }`}>
+                                        {event?.description || "Detailed event description will be displayed here. This is an exciting event that brings together diverse groups of people for an unforgettable experience."}
+                                    </p>
 
-                                <button className="text-green-600 dark:text-green-400 hover:underline mt-2">
-                                    Read more
+                                    {/* Gradient overlay when collapsed */}
+                                    {!isExpanded && (
+                                        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white dark:from-black to-transparent"></div>
+                                    )}
+                                </div>
+
+                                <button
+                                    className="text-green-600 dark:text-green-400 hover:underline mt-2 transition-colors inline-flex items-center gap-1"
+                                    onClick={toggleReadMore}
+                                >
+                                    {isExpanded ? (
+                                        <>
+                                            Read less
+                                            <svg className="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </>
+                                    ) : (
+                                        <>
+                                            Read more
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -215,7 +246,7 @@ function Eventpage() {
                                             <span className="text-2xl font-bold text-gray-900 dark:text-white">
                                                 ${event?.price || "90"} / Ticket
                                             </span>
-                                            {event?.originalPrice && (
+                                            {event?.price && (
                                                 <span className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-2 py-1 rounded text-sm">
                                                     12% Off
                                                 </span>

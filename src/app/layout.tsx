@@ -9,13 +9,9 @@ import { Toaster } from "@/components/ui/sonner"
 
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
 } from '@clerk/nextjs'
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,6 +48,7 @@ export default function RootLayout({ children }: Readonly<{
               <ThemeProvider>
                 <Header />
                 {children}
+                <Footer />
                 <Toaster position="bottom-right" expand={true} />
               </ThemeProvider>
             </DatabaseProvider>

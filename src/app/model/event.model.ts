@@ -12,9 +12,13 @@ const eventSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     imageURL: { type: String, default: null },
     description: { type: String, default: null },
+    short_description: { type: String, default: null },
     status: { type: String, default: 'active' },
     eventURL: { type: String, default: null },
-}, { timestamps: true });
+}, {
+    timestamps: true,
+    strict: false // This allows any additional fields
+});
 
 // Prevent OverwriteModelError
 const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);

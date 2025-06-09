@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import search_icon from '@/assets/icons/search.svg';
-import location_icon from '@/assets/icons/location.svg';
+import { Search as Search_icon, MapPinCheckInside } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -10,7 +9,7 @@ import {
     SelectTrigger,
 } from "@/app/components/ui/select"
 
-function Search({ search, setSearch, location, setLocation, handleClickSearch }: any) {
+function Search({ setSearch, location, setLocation, handleClickSearch }: any) {
 
     const placeholders = [
         "Find the events you're interested in",
@@ -20,7 +19,7 @@ function Search({ search, setSearch, location, setLocation, handleClickSearch }:
     ];
 
     // Mock location API
-    const locationAPI = new Promise((res, rej) => {
+    const locationAPI = new Promise((res) => {
         setTimeout(() => {
             res([
                 { city: 'Delhi', country: 'India' },
@@ -93,7 +92,7 @@ function Search({ search, setSearch, location, setLocation, handleClickSearch }:
         <div className='relative'>
             <div className='border-[1px] border-zinc-400 flex items-center gap-2 p-2 px-4 justify-between w-[40vw] z-10 dark: bg-white dark:bg-[#040f059a] dark:text-white rounded-md'>
                 <div className='flex items-center gap-2 '>
-                    <img src={search_icon} alt="Search Icon" className='w-8 h-8 dark:invert' />
+                    <Search_icon/>
                     <input
                         type="text"
                         className={`h-10 w-[20vw] pr-10 outline-none dark:bg-[#040f059a] ${animationClass}`}
@@ -106,7 +105,7 @@ function Search({ search, setSearch, location, setLocation, handleClickSearch }:
                     <div className='flex items-center gap-2 relative'>
                         <Select>
                             <SelectTrigger>
-                                <img src={location_icon} alt="Location Icon" className='w-8 h-8 hover:scale-110 cursor-pointer transition-all duration-200 dark:invert filter -hue-rotate-180' />
+                                <MapPinCheckInside />
                                 <p className='text-sm'>{myLocation?.city}, {myLocation?.country}</p>
                             </SelectTrigger>
                             <SelectContent>
@@ -123,7 +122,7 @@ function Search({ search, setSearch, location, setLocation, handleClickSearch }:
                                                             value={loc}
                                                         >
                                                             <div className='flex gap-1 items-center'>
-                                                                <img src={location_icon}></img>{loc?.city}, {loc?.country}
+                                                                <MapPinCheckInside />{loc?.city}, {loc?.country}
                                                             </div>
                                                         </SelectItem>
                                                     </div>
