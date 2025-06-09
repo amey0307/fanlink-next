@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" id="time" x="0" y="0" style="enable-background:new 0 0 24 24" version="1.1" viewBox="0 0 24 24">
+  <g id="Clockwise_2">
+    <circle id="_Path_" cx="12" cy="12" r=".5" style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"></circle>
+    <path id="_Path_2" d="M12 3.5V12l4.5 4.5" style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"></path>
+    <path id="_Path_3" d="M12 23.5C5.6 23.5.5 18.4.5 12S5.6.5 12 .5c4.3 0 8.2 2.4 10.2 6.2L18 5.6l1.4-2.3" style="fill:none;stroke:#303c42;stroke-linecap:round;stroke-linejoin:round"></path>
+    <path id="_Path_4" d="M23.5 12c0 6.4-5.1 11.5-11.5 11.5h0" style="fill:none;stroke:#303c42;stroke-dasharray:3,4;stroke-linecap:round;stroke-linejoin:round"></path>
+  </g>
+</svg>
