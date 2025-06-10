@@ -26,7 +26,7 @@ interface AuthContextType {
     signIn: (user: CurrentUser | any) => Promise<CurrentUser> | any;
 }
 
-function PaymentComponent({ eventData }: { eventData: { eventId: string, price: number } }) {
+function PaymentComponent({ eventData }: { eventData: { eventId: string, price: number, _id: string } }) {
     const { currentUser, signIn }: AuthContextType = useAuth();
     const { openSignIn } = useClerk();
 
@@ -135,10 +135,10 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
         paymentObject.open();
     }
 
-    const handleSignIn = () => {
+    const handleSignIn = (eventId: string) => {
         openSignIn({
-            afterSignInUrl: '/', // Redirect here after sign-in
-            afterSignUpUrl: '/', // Redirect here after sign-up
+            afterSignInUrl: `/event/${eventId}`, // Redirect here after sign-in
+            afterSignUpUrl: `/event/${eventId}`, // Redirect here after sign-up
         });
     };
 
@@ -157,7 +157,9 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
                                 Pay ₹{eventData?.price}
                             </span>
                         ) : (
-                            <div className="flex items-center justify-center gap-2" onClick={handleSignIn}>
+                            <div className="flex items-center justify-center gap-2" onClick={() => {
+                                handleSignIn(eventData?._id);
+                            }}>
                                 <Lock className="w-5 h-5" />
                                 Login to Buy
                             </div>

@@ -71,7 +71,7 @@ function Eventpage() {
     const [user, setUser] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(false);
     const { theme } = useTheme() as Theme;
-    const { currentUser, signIn } = useAuth() as any;
+    const { currentUser, signIn, signOut } = useAuth() as any;
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -90,7 +90,7 @@ function Eventpage() {
                 const [eventResponse, userResponse] = await Promise.all([eventPromise, userPromise]);
 
                 setEvent(eventResponse.data.data);
-                console.log(userResponse?.data?.user);
+                console.log("userResponse: ", userResponse?.data?.user);
 
                 if (userResponse) {
                     setUser(userResponse?.data?.user);

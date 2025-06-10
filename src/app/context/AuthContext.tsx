@@ -1,14 +1,24 @@
 'use client';
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useUser } from '@clerk/clerk-react';
 
 const AuthContext = createContext({
     currentUser: null,
-    signIn: (signIn: (user: any) => void) => { },
+    signIn: (user: any) => Promise.resolve(),
     signOut: () => { },
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [currentUser, setCurrentUser] = useState({} as any);
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const { isSignedIn, user } = useUser();
+
+    // Sync with Clerk's authentication state
+    useEffect(() => {
+        if (!isSignedIn || !user) {
+            // User is signed out in Clerk, clear our context
+            setCurrentUser(null);
+        }
+    }, [isSignedIn, user]);
 
     const signIn = (user: any): Promise<any> => {
         return new Promise((resolve) => {
