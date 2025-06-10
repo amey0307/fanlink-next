@@ -5,7 +5,7 @@ import { ThemeProvider } from "./context/ThemeProvider";
 import { DatabaseProvider } from "./providers";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "@/components/ui/sonner"
-
+import { useTheme } from "./context/ThemeProvider";
 
 import {
   ClerkProvider,
@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 };
 
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const theme = typeof window !== "undefined" ? localStorage.getItem("theme") || "dark" : "dark";
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");
@@ -37,6 +38,7 @@ if (!PUBLISHABLE_KEY) {
 export default function RootLayout({ children }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" webcrx="">
       <body
@@ -49,7 +51,7 @@ export default function RootLayout({ children }: Readonly<{
                 <Header />
                 {children}
                 <Footer />
-                <Toaster position="bottom-right" expand={true} />
+                <Toaster position="bottom-right" offset={{ top: "100px" }} />
               </ThemeProvider>
             </DatabaseProvider>
           </AuthProvider>

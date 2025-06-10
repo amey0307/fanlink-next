@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import HomeSkeleton from "@/app/components/HomeSkeleton";
 import { useTheme } from "@/app/context/ThemeProvider";
@@ -8,6 +8,18 @@ import PaymentComponent from "@/app/components/PaymentComponent";
 import { format } from "date-fns";
 import { useAuth } from "@/app/context/AuthContext";
 import { useParams } from "next/navigation";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner";
 
 function Eventpage() {
     const params = useParams();
@@ -18,6 +30,36 @@ function Eventpage() {
         setIsExpanded(!isExpanded);
     };
 
+    const handleCancelTicket = async (eventId: string) => {
+        if (!eventId) {
+            console.error("Event ID is required to cancel the ticket.");
+            return;
+        }
+
+        try {
+            const response = await axios.delete('/api/user/delete-event', {
+                data: { eventId, userId: currentUser?.id }
+            });
+
+            if (response.status === 200) {
+                toast.success("Ticket cancelled successfully");
+                new Promise((resolve) => {
+                    setTimeout(() => {
+                        window.location.reload();
+                        resolve(true);
+                    }, 1000);
+                });
+            } else if (response.status === 400) {
+                toast.error("You have not booked this event or it has already been cancelled.");
+                console.error("You have not booked this event or it has already been cancelled.");
+            } else {
+                toast.error("Failed to cancel ticket:", response.data);
+            }
+        } catch (error: any) {
+            toast.error("Error cancelling ticket:", error.message);
+        }
+    }
+
     interface Theme {
         theme: string;
     }
@@ -26,11 +68,11 @@ function Eventpage() {
     const [user, setUser] = useState<any>({});
     const [loading, setLoading] = useState<boolean>(false);
     const { theme } = useTheme() as Theme;
-    const { currentUser } = useAuth() as any;
+    const { currentUser, signIn } = useAuth() as any;
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        console.log("eventId:", eventId);
+        // console.log("eventId:", eventId);
 
         if (!eventId || !currentUser?.id) {
             console.log("Missing eventId or currentUser");
@@ -47,8 +89,11 @@ function Eventpage() {
 
                 setEvent(eventResponse.data.data);
                 setUser(userResponse.data);
-                console.log("Event data:", eventResponse.data);
-                console.log("User data:", userResponse.data);
+                // console.log("Event data:", eventResponse.data);
+                // console.log("Event data:", eventResponse.data);
+
+                const userData = { ...currentUser, ...userResponse.data };
+                await signIn(userData);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -239,12 +284,12 @@ function Eventpage() {
                                 </div>
 
                                 {/* Price and Booking */}
-                                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+                                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg shadow-gray-200 dark:shadow-gray-900">
                                     <div className="mb-4">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Price</h3>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                                                ${event?.price || "90"} / Ticket
+                                            <span className="text-2xl font-bold text-gray-900 dark:text-white">₹
+                                                {event?.price || "Free"} / Ticket
                                             </span>
                                             {event?.price && (
                                                 <span className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-2 py-1 rounded text-sm">
@@ -254,18 +299,36 @@ function Eventpage() {
                                         </div>
                                     </div>
 
-                                    {!user?.data?.user?.bookedEvents?.includes(event?.eventId) ? (
+                                    {!user?.user?.bookedEvents?.includes(event?.eventId) ? (
                                         <div>
                                             <PaymentComponent eventData={event} />
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
-                                            <button className="w-full bg-green-600 hover:bg-green-900 text-white py-3 rounded-lg font-semibold transition-colors">
+                                            <button className="w-full bg-green-700 hover:bg-green-900 text-white py-3 rounded-lg font-semibold transition-colors">
                                                 Go To Tickets
                                             </button>
-                                            <button className="w-full bg-red-700 hover:bg-red-900 text-white py-3 rounded-lg font-semibold transition-colors">
-                                                Cancel Ticket
-                                            </button>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <button className="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg font-semibold transition-colors">
+                                                        Cancel Ticket
+                                                    </button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Cancel Ticket</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Are you sure you want to cancel your ticket for this event?
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleCancelTicket(event?.eventId)}>
+                                                            Confirm
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
                                         </div>
                                     )}
                                 </div>

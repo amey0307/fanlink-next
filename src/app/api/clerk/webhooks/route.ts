@@ -101,6 +101,10 @@ export async function POST(req: NextRequest) {
                     firstName: userData.first_name || '',
                     lastName: userData.last_name || '',
                     profileImageUrl: userData.profile_image_url || '',
+                    genre: [],
+                    likedOrg: [],
+                    ArtistFollowed: [],
+                    bookedEvents: [],
                 });
 
                 await newUser.save();

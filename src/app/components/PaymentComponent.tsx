@@ -11,22 +11,33 @@ interface CurrentUser {
     contactNumber?: string;
 }
 
+interface AuthContextType {
+    currentUser: CurrentUser | any;
+    signIn: (user: CurrentUser | any) => Promise<CurrentUser> | any;
+}
+
 function PaymentComponent({ eventData }: { eventData: { eventId: string, price: number } }) {
-    const { currentUser }: { currentUser: CurrentUser } = useAuth();
+    const { currentUser, signIn }: AuthContextType = useAuth();
 
     const registerEvent = async () => {
         console.log("register user", currentUser);
 
-        await fetch("/api/user/book-event", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                eventId: eventData.eventId,
-                userId: currentUser?.id,
-            }),
-        });
+        try {
+            await fetch("/api/user/book-event", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    eventId: eventData.eventId,
+                    userId: currentUser?.id,
+                }),
+            });
+        } catch (err) {
+            const errorMessage = (err instanceof Error && err.message) ? err.message : "An unknown error occurred";
+            throw new Error(errorMessage);
+        }
+        toast.success("Event booked successfully");
     };
 
     // Function to load the Razorpay script dynamically
@@ -66,7 +77,7 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
                 "Content-Type": "application/json",
             },
             data: {
-                amount: eventData.price | 200, // Amount in paise
+                amount: Number(Math.floor(eventData?.price * 100)) | 200, // Amount in paise
                 currency: "INR",
             },
         });
@@ -90,7 +101,7 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
             prefill: {
                 name: currentUser.fullName,
                 email: currentUser.email,
-                contact: "9999999999",
+                contact: currentUser.contactNumber || "9999999999",
             },
             notes: {
                 address: "Soumya Dey Corporate Office",
@@ -98,7 +109,7 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
             handler: async function () {
                 try {
                     await registerEvent();
-                    window.location.href = "/success";
+                    window.location.href = "/successPage";
                 } catch (err) {
                     const errorMessage = (err instanceof Error && err.message) ? err.message : "Payment failed. Please try again.";
                     toast.error(errorMessage);
@@ -117,7 +128,7 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
         <div className="App">
             <header className="App-header">
                 <button
-                    className=" App-link w-[18rem] mx-auto dark:bg-green-400 dark:hover:bg-green-50 p-2 rounded-sm text-black border-black border-2 hover:bg-slate-100 transition-all duration-150"
+                    className=" App-link w-[18rem] mx-auto dark:bg-green-400 dark:hover:bg-green-50 p-2 rounded-sm text-black border-black border-[1.5px] bg-green-200 hover:bg-slate-200 hover:border-slate-500 transition-all duration-150 cursor-pointer"
                     onClick={displayRazorpay}
                 >
                     Purchase Ticket

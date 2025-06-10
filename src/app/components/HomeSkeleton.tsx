@@ -1,14 +1,12 @@
 import React from 'react'
 import { SkeletonCard } from './SkeletonCard';
 import { Skeleton } from "@/app/components/ui/skeleton";
-import { useTheme } from '@/app/context/ThemeProvider';
 
 
 function HomeSkeleton() {
-    const { theme } = useTheme();
 
     return (
-        <div className={`${theme}`}>
+        <div>
             <div className='min-h-screen dark:bg-[#011701] pt-10'>
                 <Skeleton className='h-[20vh] w-[60vw] mx-auto mt-10' />
                 <div className='mx-auto'>

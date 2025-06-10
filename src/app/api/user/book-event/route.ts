@@ -21,6 +21,12 @@ export async function POST(req: Request) {
             return Response.json({ message: "User already booked event" }, { status: 400 });
 
         user.bookedEvents.push(eventId);
+
+        if (!event.seats || event.seats <= 0) {
+            return Response.json({ message: "No seats available for this event" }, { status: 400 });
+        }
+
+        // Decrease the number of available seats
         event.seats--;
 
         await user.save();

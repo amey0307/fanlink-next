@@ -10,6 +10,8 @@ import { Switch } from "@/components/ui/switch"
 import { useTheme } from '@/app/context/ThemeProvider';
 import { toast } from "sonner"
 import { Sun, Moon } from 'lucide-react';
+import { Menu } from './Menu';
+
 
 function Header() {
     const pathname = usePathname();
@@ -44,8 +46,8 @@ function Header() {
     );
 
     return (
-        <div className={`${theme} z-[100]`}>
-            <nav className='p-5 flex justify-between items-center shadow-lg border-b-[1px] border-zinc-300 relative dark:bg-gradient-to-l from-green-950 to-[#011701] fixed top-0 left-0 right-0 bg-white dark:border-zinc-700 dark:shadow-none'>
+        <div className='sticky -top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-900 transition-all duration-300'>
+            <nav className='p-5 flex justify-between items-center shadow-xl border-b-[1px] border-zinc-300 relative dark:bg-gradient-to-l from-green-950 to-[#011701] fixed top-0 left-0 right-0 bg-white dark:border-zinc-700 dark:shadow-none'>
                 <Link href="/">
                     <Image
                         src={logo}
@@ -67,15 +69,16 @@ function Header() {
 
                 <div className='flex items-center gap-5 '>
                     <SignInButton />
+                    <Menu />
 
                     <div className='flex items-center gap-2'>
-                        <Sun className='h-6 w-6 dark:invert' />
+                        <Sun className='h-6 w-6' />
 
                         <Switch className='h-6 w-12'
-                            defaultChecked={theme === 'dark' ? true : false}
+                            defaultChecked={typeof window !== "undefined" && localStorage.getItem('theme') === 'dark'}
                             onCheckedChange={handleThemeChange} />
 
-                        <Moon className='h-6 w-6 dark:invert' />
+                        <Moon className='h-6 w-6' />
                     </div>
                 </div>
             </nav>
