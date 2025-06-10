@@ -20,6 +20,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner";
+import { Ban, Cross, Link } from "lucide-react";
 
 function Eventpage() {
     const params = useParams();
@@ -29,6 +30,8 @@ function Eventpage() {
     const toggleReadMore = () => {
         setIsExpanded(!isExpanded);
     };
+
+
 
     const handleCancelTicket = async (eventId: string) => {
         if (!eventId) {
@@ -74,35 +77,42 @@ function Eventpage() {
         window.scrollTo(0, 0);
         // console.log("eventId:", eventId);
 
-        if (!eventId || !currentUser?.id) {
-            console.log("Missing eventId or currentUser");
-            return;
-        }
-
         const fetchData = async () => {
             setLoading(true);
             try {
-                const [eventResponse, userResponse] = await Promise.all([
-                    axios.get(`/api/event/get/${eventId}`),
-                    axios.get(`/api/user/current/${currentUser?.id}`)
-                ]);
+                setLoading(true);
+
+                const eventPromise = axios.get(`/api/event/get/${eventId}`);
+                const userPromise = currentUser?.id
+                    ? axios.get(`/api/user/current/${currentUser?.id}`)
+                    : Promise.resolve(null);
+
+                const [eventResponse, userResponse] = await Promise.all([eventPromise, userPromise]);
 
                 setEvent(eventResponse.data.data);
-                setUser(userResponse.data);
-                // console.log("Event data:", eventResponse.data);
-                // console.log("Event data:", eventResponse.data);
+                console.log(userResponse?.data?.user);
 
-                const userData = { ...currentUser, ...userResponse.data };
-                await signIn(userData);
+                if (userResponse) {
+                    setUser(userResponse?.data?.user);
+                    const mergedUser = { ...currentUser, ...userResponse?.data?.user };
+                    await signIn(mergedUser);
+                } else {
+                    setUser({});
+                }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error("Error fetching event or user data:", error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [eventId, currentUser?.id]);
+    }, [currentUser?.id]);
+
+    // Add this useEffect to see when user state actually changes
+    // useEffect(() => {
+    //     console.log("user state updated:", user);
+    // }, [user]);
 
     if (loading) {
         return <HomeSkeleton />;
@@ -239,6 +249,7 @@ function Eventpage() {
                                     <p className={`text-gray-600 dark:text-gray-300 leading-relaxed transition-all duration-300 ${!isExpanded ? 'line-clamp-3' : ''
                                         }`}>
                                         {event?.description || "Detailed event description will be displayed here. This is an exciting event that brings together diverse groups of people for an unforgettable experience."}
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque tempore explicabo adipisci quos nemo voluptates nam libero laboriosam praesentium doloribus. Ad necessitatibus ex quidem blanditiis voluptas. Earum quis temporibus beatae sapiente accusantium omnis commodi quia. Eius nisi libero, dignissimos eaque, explicabo dolorem doloribus nihil rem temporibus officiis incidunt molestias repudiandae placeat, exercitationem labore? Dolor at soluta nihil animi vel odio aperiam fuga iure deserunt sit neque corporis atque cupiditate vitae, laboriosam vero optio eligendi dicta. Autem obcaecati, accusantium delectus officiis recusandae quasi culpa laboriosam cumque earum exercitationem sed, ipsum ab, placeat beatae quam iusto incidunt quis excepturi dolore atque eligendi. Recusandae impedit laboriosam blanditiis reprehenderit deserunt debitis fugiat, obcaecati iusto corporis quibusdam consequuntur magni quaerat sed enim asperiores, sint animi vero, velit illum voluptates nemo alias itaque harum? Sequi commodi ad beatae molestiae dolorum, magni maxime voluptates vitae nesciunt obcaecati sapiente totam saepe, aperiam assumenda earum alias possimus tempore quae autem ipsam voluptatum praesentium eligendi quibusdam aliquam? Accusamus, unde beatae repellat doloribus ex saepe veniam, quasi maxime voluptates neque provident, natus inventore consequuntur? Praesentium culpa perferendis fuga delectus itaque earum alias ipsam quia id aspernatur nesciunt, labore error consequuntur natus voluptas ab unde accusamus? Iusto nobis dolore dolor? Ex officiis dicta, tempore id eum recusandae, beatae delectus nobis corporis harum magnam ut consequatur, neque temporibus! Consequatur eaque maiores non pariatur quidem explicabo reiciendis at. Culpa.
                                     </p>
 
                                     {/* Gradient overlay when collapsed */}
@@ -272,7 +283,7 @@ function Eventpage() {
 
                         {/* Right Sidebar */}
                         <div className="lg:col-span-1">
-                            <div className="sticky top-6">
+                            <div className="sticky top-30">
                                 {/* Event Image */}
                                 <div className="mb-6">
                                     <img
@@ -299,19 +310,19 @@ function Eventpage() {
                                         </div>
                                     </div>
 
-                                    {!user?.user?.bookedEvents?.includes(event?.eventId) ? (
+                                    {!user?.bookedEvents?.includes(event?.eventId) ? (
                                         <div>
                                             <PaymentComponent eventData={event} />
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
-                                            <button className="w-full bg-green-700 hover:bg-green-900 text-white py-3 rounded-lg font-semibold transition-colors">
-                                                Go To Tickets
+                                            <button className="w-full dark:bg-green-400 dark:hover:bg-green-500 p-2 rounded-sm text-black border-black border-[1.5px] bg-green-200 hover:bg-green-400 hover:border-slate-500 transition-all duration-150 cursor-pointer flex items-center justify-center gap-2">
+                                                <Link size={'15'} />Go To Ticket
                                             </button>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
-                                                    <button className="w-full bg-red-800 hover:bg-red-900 text-white py-3 rounded-lg font-semibold transition-colors">
-                                                        Cancel Ticket
+                                                    <button className="w-full dark:bg-red-400 dark:hover:bg-red-500 p-2 rounded-sm text-black border-black border-[1.5px] bg-red-200 hover:bg-red-400 hover:border-red-500 transition-all duration-150 cursor-pointer flex items-center justify-center gap-2">
+                                                        <Ban size={'15'} />Cancel Ticket
                                                     </button>
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>

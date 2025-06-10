@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -75,7 +76,7 @@ function Header() {
                         <Sun className='h-6 w-6' />
 
                         <Switch className='h-6 w-12'
-                            defaultChecked={typeof window !== "undefined" && localStorage.getItem('theme') === 'dark'}
+                            checked={theme === 'dark'}
                             onCheckedChange={handleThemeChange} />
 
                         <Moon className='h-6 w-6' />

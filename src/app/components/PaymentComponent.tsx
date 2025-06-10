@@ -1,6 +1,16 @@
+'use client'
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
+import { Lock, LucideLockOpen } from "lucide-react";
+import { useClerk } from "@clerk/nextjs";
+
+// Add Razorpay type to window
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
+}
 
 interface CurrentUser {
     id: string;
@@ -18,6 +28,7 @@ interface AuthContextType {
 
 function PaymentComponent({ eventData }: { eventData: { eventId: string, price: number } }) {
     const { currentUser, signIn }: AuthContextType = useAuth();
+    const { openSignIn } = useClerk();
 
     const registerEvent = async () => {
         console.log("register user", currentUser);
@@ -56,8 +67,8 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
     }
 
     async function displayRazorpay() {
-        if (!currentUser) {
-            toast.error("Please login to book event");
+        if (!currentUser?.id) {
+            toast.error("Please login to book event", { id: "login-required" });
             return;
         }
 
@@ -124,15 +135,37 @@ function PaymentComponent({ eventData }: { eventData: { eventId: string, price: 
         paymentObject.open();
     }
 
+    const handleSignIn = () => {
+        openSignIn({
+            afterSignInUrl: '/', // Redirect here after sign-in
+            afterSignUpUrl: '/', // Redirect here after sign-up
+        });
+    };
+
     return (
         <div className="App">
             <header className="App-header">
+
                 <button
                     className=" App-link w-[18rem] mx-auto dark:bg-green-400 dark:hover:bg-green-50 p-2 rounded-sm text-black border-black border-[1.5px] bg-green-200 hover:bg-slate-200 hover:border-slate-500 transition-all duration-150 cursor-pointer"
                     onClick={displayRazorpay}
                 >
-                    Purchase Ticket
+                    {
+                        currentUser?.id ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <LucideLockOpen className="w-5 h-5" />
+                                Pay ₹{eventData?.price}
+                            </span>
+                        ) : (
+                            <div className="flex items-center justify-center gap-2" onClick={handleSignIn}>
+                                <Lock className="w-5 h-5" />
+                                Login to Buy
+                            </div>
+                        )
+                    }
                 </button>
+
+
             </header>
         </div>
     );

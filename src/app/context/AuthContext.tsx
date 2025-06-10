@@ -13,14 +13,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const signIn = (user: any): Promise<any> => {
         return new Promise((resolve) => {
             setCurrentUser(user);
-            localStorage.setItem('currentUser', JSON.stringify(user));
             resolve(user);
         });
     };
 
     const signOut = () => {
         setCurrentUser(null);
-        localStorage.removeItem('currentUser');
     };
 
     return (

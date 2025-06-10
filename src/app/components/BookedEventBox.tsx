@@ -1,9 +1,6 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import calender_icon from "@/assets/icons/calender.svg";
-import location_icon from "@/assets/icons/location.svg";
-import time_icon from "@/assets/icons/clock.svg";
 import { MapPinCheckInside, Clock, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { EventData } from "@/app/type/util";
@@ -23,13 +20,13 @@ function BookedEventBox({ events }: { events: EventData }) {
                 <MapPinCheckInside className="w-6 h-6 dark:invert hue-rotate-180" />
                 {events?.location}
             </div>
-            <Link href={`/event/${events?.eventId}`}>
-                <button className="text-white bg-teal-600 p-2 font-medium text-sm mt-2 rounded-md px-4  group-hover:bg-red-500 transition-all duration-200 hover:scale-105">
+            <Link href={`/event/${events?._id}`}>
+                <button className="text-white bg-teal-600 font-medium text-sm mt-2 rounded-md px-2 group-hover:bg-slate-900 dark:group-hover:bg-slate-100 group-hover:text-white dark:group-hover:text-black transition-all duration-200 hover:scale-[1.05] h-8 cursor-pointer mt-4">
                     Show Event
                 </button>
             </Link>
-            <div className="image-container overflow-hidden absolute top-4 right-4">
-                <Link href={`/event/${events?.eventId}`}>
+            <div className="image-container overflow-hidden absolute top-4 right-4 cursor-pointer">
+                <Link href={`/event/${events?._id}`}>
                     <img
                         src={events?.imageURL}
                         alt={events?.eventName}

@@ -18,7 +18,7 @@ export function Menu() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline">Menu</Button>
+                <Button variant="outline" className="cursor-pointer">Menu</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 mr-4 mt-1" align="start">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>

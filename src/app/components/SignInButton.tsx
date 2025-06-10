@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useUser, useClerk, UserButton } from '@clerk/clerk-react';
 import { useAuth } from '../context/AuthContext';
 import { Skeleton } from "@/components/ui/skeleton";
+import { LucideUser } from 'lucide-react';
 
 function SignInButton() {
     const { openSignIn } = useClerk();
@@ -14,7 +15,7 @@ function SignInButton() {
             setLoading(false);
             if (isSignedIn) {
                 signIn(user);
-                console.log("CurrentUser Updated: ", user);
+                // console.log("CurrentUser Updated: ", user);
             }
         }
     }, [isSignedIn, user, signIn]);
@@ -43,9 +44,9 @@ function SignInButton() {
     return (
         <button
             onClick={handleSignIn}
-            className='border-2 text-white bg-zinc-700 border-zinc-500 px-4 py-2 rounded-md hover:bg-white hover:text-black transition-all duration-300 w-[5vw] dark:bg-green-800 dark:border-green-800 dark:hover:bg-white'
+            className='border-[1px] text-white dark:text-black bg-[#0b270ff3] rounded-sm hover:bg-white hover:text-black transition-all duration-300 py-[5px] px-2 dark:bg-[#081b0b78] dark:text-white dark:hover:text-black dark:hover:bg-white flex items-center justify-center gap-2 hover:scale-105 text-md cursor-pointer'
         >
-            Sign In
+            <LucideUser size={18} />  Sign In
         </button>
     );
 }

@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import Booktickets from "../components/BookTickets";
 import { toast } from "sonner";
 import { EventData } from "../type/util";
+import { timeStamp } from "console";
 
 function Dashboard() {
     const { currentUser } = useAuth() as any;
@@ -32,10 +33,11 @@ function Dashboard() {
             setLoading(true);
 
             const getEvents = async () => {
-                const localEvents = localStorage.getItem("events");
+                const localEvents: any = localStorage.getItem("events");
 
                 // Check if events are already stored in localStorage
-                if (localEvents) {
+                if (localEvents && localEvents.timeStamp && (Date.now() - localEvents.timeStamp < 24 * 60 * 60 * 1000)) {
+                    // If events are stored and not older than 24 hours, use them
                     setEvents(JSON.parse(localEvents));
                     return;
                 }
@@ -44,7 +46,7 @@ function Dashboard() {
                 const data = await axios.get(`/api/event/get-all`);
 
                 setEvents(data.data.data);
-                localStorage.setItem("events", JSON.stringify(data.data.data));
+                localStorage.setItem("events", JSON.stringify({ ...data.data.data, timeStamp: Date.now() }));
             };
 
             const getBookedTickets = async () => {
