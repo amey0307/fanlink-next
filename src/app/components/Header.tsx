@@ -47,16 +47,20 @@ function Header() {
     );
 
     return (
-        <div className='sticky -top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-900 transition-all duration-300'>
-            <nav className='p-5 flex justify-between items-center shadow-xl border-b-[1px] border-zinc-300 relative dark:bg-gradient-to-l from-green-950 to-[#011701] fixed top-0 left-0 right-0 bg-white dark:border-zinc-700 dark:shadow-none'>
-                <Link href="/">
-                    <Image
-                        src={logo}
-                        alt="Logo"
-                        className='w-[3vw] cursor-pointer hover:opacity-70 transition-all duration-200 dark:invert'
-                        style={{ width: '3vw', height: 'auto', cursor: 'pointer' }}
-                    />
-                </Link>
+        <div className='sticky top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-900 transition-all duration-300'>
+            <nav className='p-5 flex justify-between items-center shadow-xl border-b-[1px] border-zinc-300 relative dark:bg-gradient-to-l from-[#012301] to-[#011701] bg-white dark:border-zinc-700 dark:shadow-none bg-transparent backdrop-blur-xl'>
+                <div className='flex justify-center items-center gap-2 text-lg font-bold text-green-950 dark:text-white'>
+                    {/* Logo */}
+                    <Link href="/" className='flex items-center gap-2 cursor-pointer hover:opacity-70 transition-all duration-200'>
+                        <Image
+                            src={logo}
+                            alt="Logo"
+                            className='w-[3vw] dark:invert'
+                            style={{ width: '3vw', height: 'auto', cursor: 'pointer' }}
+                        />
+                        <span className=' text-[2rem]'>FanLink</span>
+                    </Link>
+                </div>
 
                 {isSearchVisible && (
                     <Search

@@ -15,6 +15,7 @@ const eventSchema = new mongoose.Schema({
     short_description: { type: String, default: null },
     status: { type: String, default: 'active' },
     eventURL: { type: String, default: null },
+    likes: { type: Number, default: 0 },
 }, {
     timestamps: true,
     strict: false // This allows any additional fields

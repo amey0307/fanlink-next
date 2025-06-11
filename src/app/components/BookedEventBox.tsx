@@ -20,13 +20,13 @@ function BookedEventBox({ events }: { events: EventData }) {
                 <MapPinCheckInside className="w-6 h-6 dark:invert hue-rotate-180" />
                 {events?.location}
             </div>
-            <Link href={`/event/${events?._id}`}>
-                <button className="text-white bg-teal-600 font-medium text-sm mt-2 rounded-md px-2 group-hover:bg-slate-900 dark:group-hover:bg-slate-100 group-hover:text-white dark:group-hover:text-black transition-all duration-200 hover:scale-[1.05] h-8 cursor-pointer mt-4">
+            <Link href={`/showTicket/${events?._id}`}>
+                <button className="text-black dark:text-white bg-[#b2eebda9] dark:bg-[#081b0ba5] font-medium text-sm rounded-md px-2 group-hover:bg-slate-900 dark:group-hover:bg-slate-100 group-hover:text-white dark:group-hover:text-black transition-all duration-200 hover:scale-[1.02] h-8 cursor-pointer mt-4">
                     Show Event
                 </button>
             </Link>
             <div className="image-container overflow-hidden absolute top-4 right-4 cursor-pointer">
-                <Link href={`/event/${events?._id}`}>
+                <Link href={`/showTicket/${events?._id}`}>
                     <img
                         src={events?.imageURL}
                         alt={events?.eventName}
