@@ -1,5 +1,18 @@
 version: 0.2
 
+env:
+  # Reference the secrets stored in AWS Secrets Manager
+  secrets-manager:
+    # Syntax is: VARIABLE_NAME: "secret-name:json-key"
+    PORT: "fanlink/production-secrets:PORT"
+    MONGODB_URI: "fanlink/production-secrets:MONGODB_URI"
+    CLERK_PUBLISHABLE_KEY: "fanlink/production-secrets:CLERK_PUBLISHABLE_KEY"
+    CLERK_SECRET_KEY: "fanlink/production-secrets:CLERK_SECRET_KEY"
+    SIGNING_SECRET: "fanlink/production-secrets:SIGNING_SECRET"
+    RAZORPAY_SECRET: "fanlink/production-secrets:RAZORPAY_SECRET"
+    RAZORPAY_KEY_ID: "fanlink/production-secrets:RAZORPAY_KEY_ID"
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "fanlink/production-secrets:NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
+
 phases:
   install:
     runtime-versions:
