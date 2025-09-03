@@ -1,0 +1,26 @@
+import React from "react";
+import { SkeletonCard } from "./SkeletonCard";
+import { Skeleton } from "@/app/components/ui/skeleton";
+
+function HomeSkeletonMobile() {
+  return (
+    <div>
+      <div className="pt-10">
+        <Skeleton className="h-[20vh] w-[60vw] mx-auto mt-10" />
+        <div className="mx-auto">
+          <Skeleton className="h-16 w-[40vw] mt-10 mx-auto" />
+        </div>
+        <div className="w-[60vw] mx-auto mt-10">
+          <div className="flex items-center justify-center gap-20 mt-10">
+            <SkeletonCard />
+          </div>
+          <div className="flex items-center justify-center gap-20 mt-10">
+            <SkeletonCard />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default HomeSkeletonMobile;

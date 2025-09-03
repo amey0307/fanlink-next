@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
-import { useTheme } from "@/app/context/ThemeProvider";
 import { format } from "date-fns";
 import {
   Calendar,
@@ -22,39 +21,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaymentComponent from "@/app/components/PaymentComponent";
-
-interface EventData {
-  _id: string;
-  eventId: string;
-  eventName: string;
-  eventDate: string;
-  eventTime: string;
-  location: string;
-  price: number;
-  imageURL: string;
-  description: string;
-  seats: number;
-}
-
-interface Coupon {
-  code: string;
-  description: string;
-  discountType: "percentage" | "fixed";
-  discountValue: number;
-  minAmount?: number;
-  maxDiscount?: number;
-  expiryDate: string;
-  isActive: boolean;
-}
-
-interface ContactInfo {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  keepUpdated: boolean;
-  agreeTerms: boolean;
-}
+import { EventData, Coupon, ContactInfo } from "@/app/type/util";
 
 // Sample coupons data
 const AVAILABLE_COUPONS: Coupon[] = [
@@ -134,7 +101,6 @@ function CheckoutPage() {
 
   // Simulate loading delay
   useEffect(() => {
-
     const delay = async () => {
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -315,7 +281,7 @@ function CheckoutPage() {
             Event Not Found
           </h1>
           <Link
-            href="/dashboard"
+            href="/"
             className="text-green-600 dark:text-green-400 hover:underline"
           >
             Return to Dashboard
@@ -383,7 +349,7 @@ function CheckoutPage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Ticket Selection */}
             <div className="bg-white dark:bg-[#050a05aa] border-2 rounded-lg p-6 shadow-lg">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
@@ -432,8 +398,7 @@ function CheckoutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    First name{" "}
-                    <span className="text-xs text-red-400 text-2xl">*</span>
+                    First name <span className="text-md text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -450,9 +415,7 @@ function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Last name{" "}
-                    <span className="text-xs text-slate-500 text-2xl">
-                      (optional)
-                    </span>
+                    <span className="text-xs text-slate-500">(optional)</span>
                   </label>
                   <input
                     type="text"
@@ -467,18 +430,15 @@ function CheckoutPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Email{" "}
-                    <span className="text-xs text-red-400 text-2xl">*</span>
+                    Email <span className="text-md text-red-400">*</span>
                   </label>
                   <input
                     type="email"
-                    value={contactInfo.email}
+                    defaultValue={contactInfo?.email}
                     required
-                    onChange={(e) =>
-                      handleContactInfoChange("email", e.target.value)
-                    }
+                    disabled={currentUser}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Amanda@email.com"
+                    placeholder="email@example.com"
                   />
                 </div>
 
@@ -524,7 +484,8 @@ function CheckoutPage() {
                     className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                   />
                   <span className="text-sm text-gray-700 dark:text-gray-300">
-                    I agree with the Terms of Use & Privacy Policy <span className="text-red-500">*</span>
+                    I agree with the Terms of Use & Privacy Policy{" "}
+                    <span className="text-red-500">*</span>
                   </span>
                 </label>
               </div>
@@ -722,18 +683,20 @@ function CheckoutPage() {
                 </div>
 
                 {/* Conditional PaymentComponent */}
-                <PaymentComponent
-                  eventData={{
-                    ...event,
-                    price: total, // Pass the final price after discount
-                  }}
-                  appliedCoupon={appliedCoupon}
-                  originalPrice={subtotal}
-                  discountAmount={couponDiscount}
-                  contactInfo={contactInfo}
-                  ticketQuantity={ticketQuantity}
-                  formValid={isFormValid()}
-                />
+                <div className="flex justify-center">
+                  <PaymentComponent
+                    eventData={{
+                      ...event,
+                      price: total, // Pass the final price after discount
+                    }}
+                    appliedCoupon={appliedCoupon}
+                    originalPrice={subtotal}
+                    discountAmount={couponDiscount}
+                    contactInfo={contactInfo}
+                    ticketQuantity={ticketQuantity}
+                    formValid={isFormValid()}
+                  />
+                </div>
               </div>
             </div>
           </div>

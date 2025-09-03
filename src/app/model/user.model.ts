@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
     ArtistFollowed: { type: [String], default: [] },
     bookedEvents: { type: [String], default: [] },
     likedEvents: [String], // Array of event IDs
+    tickets: [String], // Array of ticket IDs
   },
   {
     timestamps: true,

@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import Booktickets from "../components/BookTickets";
 import { toast } from "sonner";
 import { EventData } from "../type/util";
+import HomeSkeletonMobile from "../components/HomeSkeletonMobile";
 
 function Dashboard() {
   const { currentUser } = useAuth() as any;
@@ -59,8 +60,14 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div>
-        <HomeSkeleton />
+      <div className="dark:bg-gradient-to-br from-green-950 to-[#000000] min-h-screen">
+        {typeof window !== "undefined" && window.innerWidth > 768 ? (
+          <HomeSkeleton />
+        ) : (
+          <div className="flex justify-center items-center min-h-screen">
+            <HomeSkeletonMobile />
+          </div>
+        )}
       </div>
     );
   }
@@ -99,13 +106,14 @@ function Dashboard() {
             ]}
           />
 
-          <Search
-            search={search}
-            setSearch={setSearch}
-            location={location}
-            setLocation={setLocation}
-            handleClickSearch={handleClickSearch}
-          />
+          {typeof window !== "undefined" && window?.innerWidth > 768 && (
+            <Search
+              setLocation={setLocation}
+              search={search}
+              setSearch={setSearch}
+              handleClickSearch={handleClickSearch}
+            />
+          )}
 
           <div
             className="border-2 w-full bg-gradient-to-br dark:from-[#051802dd] dark:to-[#0a0a0a9a] from-[#31303000] to-[#28292828] rounded-t-2xl mt-10 px-[19vw] backdrop-blur-2xl h-[30vh]"

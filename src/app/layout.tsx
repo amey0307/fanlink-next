@@ -29,7 +29,6 @@ export const metadata: Metadata = {
 };
 
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-const theme = typeof window !== "undefined" ? localStorage.getItem("theme") || "dark" : "dark";
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");

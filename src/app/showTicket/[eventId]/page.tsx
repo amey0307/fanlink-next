@@ -183,7 +183,7 @@ function ShowTicketContent() {
         try {
             // Use the existing delete-event API
             const response = await axios.delete('/api/user/delete-event', {
-                data: { eventId, userId: currentUser?.id }
+                data: { eventId: event?.eventId, userId: currentUser?.id }
             });
 
             if (response.status === 200) {

@@ -169,13 +169,6 @@ function Eventpage() {
               },
             ]}
           />
-
-          {/* Event Date Badge */}
-          <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 px-3 py-1 rounded-md shadow-lg">
-            <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-              {event?.eventDate && format(new Date(event.eventDate), "MMMM dd")}
-            </span>
-          </div>
         </div>
 
         {/* Change pb-20 to pb-8 or remove it entirely */}
