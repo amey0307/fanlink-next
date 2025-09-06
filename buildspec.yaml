@@ -1,4 +1,4 @@
-version: 0.2
+version: 0.3
 
 env:
   # Reference the secrets stored in AWS Secrets Manager
