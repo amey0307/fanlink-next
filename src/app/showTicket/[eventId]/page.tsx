@@ -22,7 +22,8 @@ import {
     ChevronRight,
     Share2,
     Heart,
-    ExternalLink
+    ExternalLink,
+    BookOpen
 } from 'lucide-react';
 import Link from 'next/link';
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,15 +54,21 @@ interface TicketData {
 }
 
 interface BookingData {
-    bookingId: string;
-    eventId: string;
-    userId: string;
-    quantity: number;
-    totalAmount: number;
-    bookingDate: string;
-    paymentId: string;
-    tickets: TicketData[];
-    status: 'confirmed' | 'cancelled';
+
+    _id: string,
+    ticketId: string,
+    eventId: string,
+    userId: string,
+    seatNumber: string,
+    price: number,
+    name: string,
+    email: string,
+    phone: string,
+    status: 'booked' | 'cancelled' | 'used',
+    createdAt: string,
+    updatedAt: string,
+    paymentId: string,
+    length: number
 }
 
 // Loading Skeleton
@@ -95,7 +102,7 @@ function ShowTicketContent() {
     const eventId = params.eventId as string;
 
     const [event, setEvent] = useState<EventData | null>(null);
-    const [booking, setBooking] = useState<BookingData | null>(null);
+    const [booking, setBooking] = useState<BookingData[] | null>([]);
     const [loading, setLoading] = useState(true);
     const [processingReturn, setProcessingReturn] = useState(false);
     const [currentRecommendation, setCurrentRecommendation] = useState(0);
@@ -103,38 +110,6 @@ function ShowTicketContent() {
     // Generate ticket code
     const generateTicketCode = () => {
         return `MRCE-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-    };
-
-    // Mock booking data (replace with actual API call)
-    const mockBookingData: BookingData = {
-        bookingId: 'BK123456789',
-        eventId: eventId,
-        userId: currentUser?.id || 'user123',
-        quantity: 2,
-        totalAmount: 162,
-        bookingDate: new Date().toISOString(),
-        paymentId: 'PAY123456789',
-        tickets: [
-            {
-                ticketId: 'T001',
-                firstName: 'Amanda',
-                lastName: 'Smith',
-                email: 'amanda@email.com',
-                phone: '(724) 651-7073',
-                code: generateTicketCode(),
-                status: 'active'
-            },
-            {
-                ticketId: 'T002',
-                firstName: 'Charles',
-                lastName: 'Sanchez',
-                email: 'charles@email.com',
-                phone: '(310) 714-5922',
-                code: generateTicketCode(),
-                status: 'active'
-            }
-        ],
-        status: 'confirmed'
     };
 
     const recommendedEvents = [
@@ -160,13 +135,15 @@ function ShowTicketContent() {
         }
     ];
 
+    //Get event details and booking info
     useEffect(() => {
         const fetchEventDetails = async () => {
             if (eventId) {
                 try {
                     const response = await axios.get(`/api/event/get/${eventId}`);
+                    const bookingData: any = await axios.get(`/api/ticket/getBooked?userId=${currentUser?.id}&eventId=${eventId}`);
                     setEvent(response.data.data);
-                    setBooking(mockBookingData);
+                    setBooking(bookingData.data.data);
                 } catch (error) {
                     console.error('Error fetching event details:', error);
                     toast.error('Failed to load event details');
@@ -176,8 +153,9 @@ function ShowTicketContent() {
         };
 
         fetchEventDetails();
-    }, [eventId]);
+    }, [eventId, currentUser]);
 
+    // Handle ticket return
     const handleReturnTicket = async () => {
         setProcessingReturn(true);
         try {
@@ -206,8 +184,8 @@ function ShowTicketContent() {
             date: event?.eventDate,
             time: event?.eventTime,
             location: event?.location,
-            tickets: booking?.tickets,
-            total: booking?.totalAmount
+            tickets: booking?.length,
+            total: booking?.price
         };
 
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ticketData, null, 2));
@@ -351,7 +329,7 @@ function ShowTicketContent() {
                 <div className="bg-white dark:bg-[#09150caf] border-2 rounded-lg p-6 mb-6 shadow-lg">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Ticket ({booking.quantity}) total: ₹{booking.totalAmount}
+                            Ticket ({booking.length}) total: ₹{booking.reduce((total, ticket) => total + ticket.price, 0)}
                         </h2>
                         <button
                             onClick={handleReturnTicket}
@@ -370,7 +348,7 @@ function ShowTicketContent() {
                     </div>
 
                     <div className="space-y-4">
-                        {booking.tickets.map((ticket, index) => (
+                        {booking?.map((ticket: any, index: number) => (
                             <div key={ticket.ticketId} className="border dark:border-gray-700 rounded-lg p-4">
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1">
@@ -383,16 +361,16 @@ function ShowTicketContent() {
 
                                         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                                             <div>
-                                                <p className="text-gray-500 dark:text-gray-400 mb-1">First name</p>
-                                                <p className="font-semibold text-gray-900 dark:text-white">{ticket.firstName}</p>
+                                                <p className="text-gray-500 dark:text-gray-400 mb-1">Seat</p>
+                                                <p className="font-semibold text-gray-900 dark:text-white">{ticket.seatNumber}</p>
                                             </div>
                                             <div>
-                                                <p className="text-gray-500 dark:text-gray-400 mb-1">Last name</p>
-                                                <p className="font-semibold text-gray-900 dark:text-white">{ticket.lastName}</p>
+                                                <p className="text-gray-500 dark:text-gray-400 mb-1">Price</p>
+                                                <p className="font-semibold text-gray-900 dark:text-white">₹{ticket.price}</p>
                                             </div>
                                             <div>
-                                                <p className="text-gray-500 dark:text-gray-400 mb-1">Email</p>
-                                                <p className="font-semibold text-gray-900 dark:text-white">{ticket.email}</p>
+                                                <p className="text-gray-500 dark:text-gray-400 mb-1">Status</p>
+                                                <p className="font-semibold text-gray-900 dark:text-white">{ticket.status}</p>
                                             </div>
                                             <div>
                                                 <p className="text-gray-500 dark:text-gray-400 mb-1">Phone number</p>
@@ -400,7 +378,7 @@ function ShowTicketContent() {
                                             </div>
                                             <div>
                                                 <p className="text-gray-500 dark:text-gray-400 mb-1">Code</p>
-                                                <p className="font-semibold text-gray-900 dark:text-white">{ticket.code}</p>
+                                                <p className="font-semibold text-gray-900 dark:text-white">{ticket.ticketId}</p>
                                             </div>
                                         </div>
                                     </div>
