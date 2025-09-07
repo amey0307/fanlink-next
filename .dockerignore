@@ -1,1 +1,10 @@
-./node_modules
+# Ignore dependencies and build artifacts
+node_modules
+.next
+
+# Ignore Docker files
+Dockerfile
+.dockerignore
+
+# Ignore local environment variables
+.env.local

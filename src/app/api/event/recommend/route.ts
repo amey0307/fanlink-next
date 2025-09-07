@@ -2,15 +2,23 @@ import User from "@/app/model/user.model";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import Event from "@/app/model/event.model";
+import mongoDB_Connection from "@/app/model/db";
 
 export async function POST(req: NextRequest, res: NextResponse) {
+    //Connect to the mongoDB
+    await mongoDB_Connection();
+
     //Get the user favorite genre from the db
     const { userId } = await req.json();
-    const userFavoriteGenre = await User.findById(userId).select('genre');
-    console.log("userFavoriteGenre", userFavoriteGenre);
 
-    //match the genre with the events in the db and find the events with similar
-    // genre with the help of gemini api (RAG)
+    if (!userId) {
+        return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    //Find the user favorite genre from the db
+    const userFavoriteGenre = await User.findOne({ clerkId: userId }).select('genre');
+
+    //match the genre with the events in the db and find the events with similar genre with the help of gemini api (RAG)
     const events = await Event.find({ genre: { $in: userFavoriteGenre.genre } });
 
     const prompt = `
@@ -35,7 +43,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
         model: "gemini-2.5-flash",
         contents: prompt,
     });
-    console.log("\n\nRESPONSE: ", await JSON.parse(response.text?.slice(7, -3)));
+
+    // console.log("\n\nRESPONSE: ", await JSON.parse(response.text?.slice(7, -3)));
 
     //return the events to the user
     return NextResponse.json({ message: "Recommendations fetched successfully", data: await JSON.parse(response.text?.slice(7, -3)) }, { status: 200 });

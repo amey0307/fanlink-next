@@ -25,7 +25,9 @@ function Dashboard() {
   const [bookedTicket, setBookedTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [totalTickets, setTotalTickets] = useState(0);
+  const [recommendedEvents, setRecommendedEvents] = useState<EventData[]>([]);
 
+  // Fetch all events from the API
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -33,7 +35,6 @@ function Dashboard() {
       const getEvents = async () => {
         // Fetch events from the API
         const data = await axios.get(`/api/event/get-all`);
-
         setEvents(data.data.data);
       };
 
@@ -47,6 +48,51 @@ function Dashboard() {
       setLoading(false);
     };
     fetchData();
+  }, [currentUser?.id]);
+
+  //Fetch recommended events based on user genre
+  useEffect(() => {
+    const fetchRecommendedEvents = async () => {
+      try {
+
+        //Check if user is logged in
+        if (!currentUser?.id) {
+          toast.error("Login to get personalized recommendations");
+          return;
+        }
+
+        //check if the recommended events are cached in redis
+        const cachedValue: any = await axios.get(`/api/cache?key=recommendedEvents-${currentUser?.id}`);
+
+        console.log("Cached recommended events: ", cachedValue.data);
+        if (cachedValue.data.data) {
+          setRecommendedEvents(cachedValue.data.data);
+          toast.success("Loaded recommended events from cache");
+          return;
+        }
+
+        //If not cached, fetch from the API
+        toast.success("Fetching recommended events from API");
+        const response = await axios.post(`/api/event/recommend`, {
+          userId: currentUser?.id
+        });
+
+        //cache the recommended events in redis for 1 hour
+        console.log("Caching recommended events in redis : ", response.data.data);
+        await axios.post(`/api/cache`, {
+          data: response.data.data,
+          userId: currentUser?.id
+        });
+
+        //set the recommended events
+        setRecommendedEvents(response.data.data);
+      } catch (error) {
+        console.error("Error fetching recommended events:", error);
+        toast.error("Error fetching recommended events");
+      }
+    };
+
+    fetchRecommendedEvents();
   }, [currentUser?.id]);
 
   const handleClickSearch = () => {

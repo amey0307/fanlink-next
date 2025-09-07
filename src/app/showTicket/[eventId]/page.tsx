@@ -54,7 +54,6 @@ interface TicketData {
 }
 
 interface BookingData {
-
     _id: string,
     ticketId: string,
     eventId: string,
@@ -68,7 +67,7 @@ interface BookingData {
     createdAt: string,
     updatedAt: string,
     paymentId: string,
-    length: number
+    length: number,
 }
 
 // Loading Skeleton
@@ -308,7 +307,7 @@ function ShowTicketContent() {
                                 <div className="flex items-center gap-3">
                                     <Ticket className="w-5 h-5 text-gray-500" />
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide">{booking.quantity} TICKETS</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide">{booking?.length} TICKETS</p>
                                         <p className="font-semibold text-gray-900 dark:text-white">Email e-ticket</p>
                                     </div>
                                 </div>
