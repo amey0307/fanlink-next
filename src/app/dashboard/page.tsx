@@ -11,6 +11,8 @@ import Booktickets from "../components/BookTickets";
 import { toast } from "sonner";
 import { EventData } from "../type/util";
 import HomeSkeletonMobile from "../components/HomeSkeletonMobile";
+import RecommendEvents from "../components/RecommendEvents";
+import { resolve } from "path";
 
 function Dashboard() {
   const { currentUser } = useAuth() as any;
@@ -50,7 +52,7 @@ function Dashboard() {
     fetchData();
   }, [currentUser?.id]);
 
-  //Fetch recommended events based on user genre
+  //Fetch recommended events based on user genre (cache in redis for 1 hour)
   useEffect(() => {
     const fetchRecommendedEvents = async () => {
       try {
@@ -64,7 +66,7 @@ function Dashboard() {
         //check if the recommended events are cached in redis
         const cachedValue: any = await axios.get(`/api/cache?key=recommendedEvents-${currentUser?.id}`);
 
-        console.log("Cached recommended events: ", cachedValue.data);
+        console.log("Cached recommended events: ", cachedValue.data.data);
         if (cachedValue.data.data) {
           setRecommendedEvents(cachedValue.data.data);
           toast.success("Loaded recommended events from cache");
@@ -76,6 +78,12 @@ function Dashboard() {
         const response = await axios.post(`/api/event/recommend`, {
           userId: currentUser?.id
         });
+
+        // If no recommendations found
+        if (response.data.code === "NRF") {
+          toast.error("No recommendations found. Please update your favorite genres in profile.");
+          return;
+        }
 
         //cache the recommended events in redis for 1 hour
         console.log("Caching recommended events in redis : ", response.data.data);
@@ -95,6 +103,11 @@ function Dashboard() {
     fetchRecommendedEvents();
   }, [currentUser?.id]);
 
+  useEffect(() => {
+    console.log("recommendedEvents: ", recommendedEvents);
+  }, [recommendedEvents])
+
+  // Function to handle search button click
   const handleClickSearch = () => {
     const searchQuery = {
       search: search,
@@ -104,6 +117,7 @@ function Dashboard() {
     toast.success(JSON.stringify(searchQuery));
   };
 
+  // Show loading state while fetching data
   if (loading) {
     return (
       <div className="dark:bg-gradient-to-br from-green-950 to-[#000000] min-h-screen">
@@ -118,6 +132,7 @@ function Dashboard() {
     );
   }
 
+  // Main dashboard content
   return (
     <div className={`transition-all duration-500`}>
       <div className="dark:bg-gradient-to-br from-green-950 to-[#000000] min-h-screen">
@@ -161,6 +176,7 @@ function Dashboard() {
             />
           )}
 
+          {/* Booked Tickets */}
           <div
             className="border-2 w-full bg-gradient-to-br dark:from-[#051802dd] dark:to-[#0a0a0a9a] from-[#31303000] to-[#28292828] rounded-t-2xl mt-10 px-[19vw] backdrop-blur-2xl h-[30vh]"
             hidden={totalTickets === 0}
@@ -168,9 +184,16 @@ function Dashboard() {
             {<Booktickets eventsData={bookedTicket ?? []} />}
           </div>
 
+          {/* New Events */}
           <div className="mb-10">
             <NewEvents eventsData={events} />
           </div>
+
+          {/* Recommended Events */}
+          <div className="mb-10">
+            <RecommendEvents eventsData={recommendedEvents} />
+          </div>
+
         </div>
       </div>
     </div>
